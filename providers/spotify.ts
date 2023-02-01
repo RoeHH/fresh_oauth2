@@ -24,8 +24,6 @@ const githubOauth2Plugin = (
       }
 
       const userData = await response.json();
-      console.log(userData);
-
       return {
         id: userData.id,
         name: userData.display_name,
