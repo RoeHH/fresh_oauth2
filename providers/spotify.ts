@@ -1,14 +1,20 @@
 import oauthPlugin from "../oauth2Plugin.ts";
+import "https://deno.land/x/dotenv@v3.2.0/load.ts";
+
+const envSecrets = {
+  oauthClientId: Deno.env.get("oauthClientId"),
+  oauthClientSecret: Deno.env.get("oauthClientSecret"),
+};
 
 const githubOauth2Plugin = (
-  clientId: string,
-  clientSecret: string,
   redirectUri: string,
+  oauthClientId?: string,
+  oauthClientSecret?: string,
   scopes?: string[],
 ) =>
   oauthPlugin({
-    clientId,
-    clientSecret,
+    clientId: throwErrorIfUndefined(oauthClientId || envSecrets.oauthClientId),
+    clientSecret: throwErrorIfUndefined(oauthClientSecret || envSecrets.oauthClientSecret),
     authorizationEndpointUri: "https://accounts.spotify.com/authorize",
     tokenEndpointUri: "https://accounts.spotify.com/api/token",
     redirectUri,
@@ -35,3 +41,10 @@ const githubOauth2Plugin = (
   });
 
 export default githubOauth2Plugin;
+
+function throwErrorIfUndefined(s: string|undefined): string {
+  if (s) {
+    return s;
+  }
+  throw new Error("Environment variable oauthClientSecret and/or oauthClientId are not set or passed as argument");
+}
