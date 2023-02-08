@@ -2,7 +2,7 @@ import {
   HandlerContext,
   MiddlewareHandlerContext,
   Plugin,
-} from "https://raw.githubusercontent.com/RoeHH/fresh/plugin_routes//server.ts";
+} from "https://raw.githubusercontent.com/RoeHH/fresh/plugin_routes/server.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.0/mod.ts";
 import { OAuth2PluginParams, User } from "./oauth2Plugin.d.ts";
 import {
