@@ -19,14 +19,19 @@ const githubOauth2Plugin = (
     tokenEndpointUri: "https://accounts.spotify.com/api/token",
     redirectUri,
     scopes: scopes ? scopes : ["user-read-email"],
-    getUserFromApi: async (accessToken) => {
+    getUserFromApi: async (accessToken, logout) => {
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
       if (!response.ok) {
-        throw new Error(await response.text());
+        if (response.status === 401) {
+          logout();
+          return null;
+        }else{
+          throw new Error(await response.text());
+        }
       }
 
       const userData = await response.json();

@@ -5,7 +5,7 @@ export interface OAuth2PluginParams {
   tokenEndpointUri: string;
   redirectUri: string;
   scopes: string[];
-  getUserFromApi: (accessToken: string) => Promise<User>;
+  getUserFromApi: (accessToken: string, logout: Function) => Promise<User | null>;
 }
 
 export interface User {

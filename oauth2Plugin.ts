@@ -106,10 +106,10 @@ export default (params: OAuth2PluginParams) => {
               ctx: MiddlewareHandlerContext<State>,
             ): Promise<Response> => {
               const { session } = ctx.state;
-
+              const logout = () => { session.set("auth_token", undefined);  };
               const token = session.get("auth_token");
               if (token) {
-                ctx.state.user = await params.getUserFromApi(token);
+                ctx.state.user = await params.getUserFromApi(token, logout);
               }
 
               return ctx.next();
