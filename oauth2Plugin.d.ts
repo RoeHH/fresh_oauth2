@@ -6,6 +6,7 @@ export interface OAuth2PluginParams {
   redirectUri: string;
   scopes: string[];
   getUserFromApi: (accessToken: string, logout: Function) => Promise<User | null>;
+  excludedPaths?: string[];
 }
 
 export interface User {
