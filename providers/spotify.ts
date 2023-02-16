@@ -8,17 +8,20 @@ const envSecrets = {
 
 const githubOauth2Plugin = (
   redirectUri: string,
-  oauthClientId?: string,
-  oauthClientSecret?: string,
-  scopes?: string[],
+  options?: {
+    oauthClientId?: string,
+    oauthClientSecret?: string,
+    scopes?: string[],
+    excludedPaths?: string[],
+  }
 ) =>
   oauthPlugin({
-    clientId: throwErrorIfUndefined(oauthClientId || envSecrets.oauthClientId),
-    clientSecret: throwErrorIfUndefined(oauthClientSecret || envSecrets.oauthClientSecret),
+    clientId: throwErrorIfUndefined(options?.oauthClientId || envSecrets.oauthClientId),
+    clientSecret: throwErrorIfUndefined(options?.oauthClientSecret || envSecrets.oauthClientSecret),
     authorizationEndpointUri: "https://accounts.spotify.com/authorize",
     tokenEndpointUri: "https://accounts.spotify.com/api/token",
     redirectUri,
-    scopes: scopes ? scopes : ["user-read-email"],
+    scopes: options?.scopes ? options.scopes : ["user-read-email"],
     getUserFromApi: async (accessToken, logout) => {
       const response = await fetch("https://api.spotify.com/v1/me", {
         headers: {

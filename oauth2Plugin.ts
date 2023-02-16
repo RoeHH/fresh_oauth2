@@ -102,16 +102,17 @@ export default (params: OAuth2PluginParams) => {
               return cookieSession()(req, ctx);
             },
             async (
-              _req: Request,
+              req: Request,
               ctx: MiddlewareHandlerContext<State>,
             ): Promise<Response> => {
-              const { session } = ctx.state;
-              const logout = () => { session.set("auth_token", undefined);  };
-              const token = session.get("auth_token");
-              if (token) {
-                ctx.state.user = await params.getUserFromApi(token, logout);
+              if(!params.excludedPaths || ![...params.excludedPaths, "/oauth2/callback", "/oauth2/logout", "/oauth2/login"].some(path => req.url.endsWith(path))){               
+                const { session } = ctx.state;
+                const logout = () => { session.set("auth_token", undefined);  };
+                const token = session.get("auth_token");
+                if (token) {
+                  ctx.state.user = await params.getUserFromApi(token, logout);
+                }
               }
-
               return ctx.next();
             },
           ],
