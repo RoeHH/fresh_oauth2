@@ -1,23 +1,26 @@
 import oauthPlugin from "../oauth2Plugin.ts";
 import "https://deno.land/x/dotenv@v3.2.0/load.ts";
+import { User } from "../oauth2Plugin.ts";
 
 const envSecrets = {
   oauthClientId: Deno.env.get("oauthClientId"),
   oauthClientSecret: Deno.env.get("oauthClientSecret"),
 };
 
-const githubOauth2Plugin = (
+const spotifyOauth2Plugin = (
   redirectUri: string,
   options?: {
     oauthClientId?: string,
     oauthClientSecret?: string,
     scopes?: string[],
     excludedPaths?: string[],
+    mock: boolean,
+    mockUser: User
   }
 ) =>
   oauthPlugin({
-    clientId: throwErrorIfUndefined(options?.oauthClientId || envSecrets.oauthClientId),
-    clientSecret: throwErrorIfUndefined(options?.oauthClientSecret || envSecrets.oauthClientSecret),
+    clientId: throwErrorIfUndefined(options?.oauthClientId || envSecrets.oauthClientId, options?.mock),
+    clientSecret: throwErrorIfUndefined(options?.oauthClientSecret || envSecrets.oauthClientSecret, options?.mock),
     authorizationEndpointUri: "https://accounts.spotify.com/authorize",
     tokenEndpointUri: "https://accounts.spotify.com/api/token",
     redirectUri,
@@ -48,11 +51,12 @@ const githubOauth2Plugin = (
     },
   });
 
-export default githubOauth2Plugin;
+export default spotifyOauth2Plugin;
 
-function throwErrorIfUndefined(s: string|undefined): string {
-  if (s) {
+function throwErrorIfUndefined(s: string|undefined, mocked: boolean): string {
+  if(mocked)
+    return "mocked"
+  if (s)
     return s;
-  }
   throw new Error("Environment variable oauthClientSecret and/or oauthClientId are not set or passed as argument");
 }
