@@ -49,6 +49,8 @@ const spotifyOauth2Plugin = (
         accessToken: accessToken,
       };
     },
+    mock: options?.mock,
+    mockUser: options?.mockUser
   });
 
 export default spotifyOauth2Plugin;
