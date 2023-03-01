@@ -4,7 +4,7 @@ import {
   Plugin,
 } from "https://raw.githubusercontent.com/RoeHH/fresh/plugin_routes/server.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.0/mod.ts";
-import { OAuth2PluginParams, User } from "https://raw.githubusercontent.com/RoeHH/fresh_oauth2/master/oauth2Plugin.d.ts";
+import { OAuth2PluginParams, User } from "./oauth2Plugin.d.ts";
 import {
   cookieSession,
   WithSession,
@@ -39,6 +39,8 @@ export default (params: OAuth2PluginParams) => {
           _req: Request,
           ctx: HandlerContext<Data, WithSession>,
         ): Promise<Response> => {
+          if(params.mock)
+            return Response.redirect("/oauth2/callback", 302)
           const { session } = ctx.state;
           const code = await oauth2Client.code.getAuthorizationUri();
           session.set("codeVerifier", code.codeVerifier);
@@ -70,19 +72,21 @@ export default (params: OAuth2PluginParams) => {
           req: Request,
           ctx: HandlerContext<Data, WithSession>,
         ): Promise<Response> => {
-          const { session } = ctx.state;
-          const url = new URL(req.url);
-          const code = url.searchParams.get("code");
-          if (!code) {
-            return new Response(undefined, { status: 404 });
+          if(!params.mock){
+            const { session } = ctx.state;
+            const url = new URL(req.url);
+            const code = url.searchParams.get("code");
+            if (!code) {
+              return new Response(undefined, { status: 404 });
+            }
+
+            const accessToken = (await oauth2Client.code.getToken(req.url, {
+              codeVerifier: session.get("codeVerifier"),
+            }))
+              .accessToken;
+
+            session.set("auth_token", accessToken);
           }
-
-          const accessToken = (await oauth2Client.code.getToken(req.url, {
-            codeVerifier: session.get("codeVerifier"),
-          }))
-            .accessToken;
-
-          session.set("auth_token", accessToken);
           return new Response(undefined, {
             headers: { location: getHostUrl(req) },
             status: 302,
@@ -112,6 +116,8 @@ export default (params: OAuth2PluginParams) => {
                 if (token) {
                   ctx.state.user = await params.getUserFromApi(token, logout);
                 }
+                if(!ctx.state.user && params.mock)
+                  ctx.state.user = { ...(params.mockUser || { id: "mock", name: "mock", email: "mock", picture: "https://source.unsplash.com/random" }), mock: true };
               }
               return ctx.next();
             },

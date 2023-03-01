@@ -7,6 +7,8 @@ export interface OAuth2PluginParams {
   scopes: string[];
   getUserFromApi: (accessToken: string, logout: Function) => Promise<User | null>;
   excludedPaths?: string[];
+  mock: boolean;
+  mockUser: User;
 }
 
 export interface User {
