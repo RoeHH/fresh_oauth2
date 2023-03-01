@@ -39,6 +39,8 @@ export default (params: OAuth2PluginParams) => {
           _req: Request,
           ctx: HandlerContext<Data, WithSession>,
         ): Promise<Response> => {
+          console.log(params.mock, "mocked oauth2 fix if in production");
+          
           if(params.mock)
             return Response.redirect("/oauth2/callback", 302)
           const { session } = ctx.state;
