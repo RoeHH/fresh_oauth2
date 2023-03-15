@@ -14,8 +14,8 @@ const spotifyOauth2Plugin = (
     oauthClientSecret?: string,
     scopes?: string[],
     excludedPaths?: string[],
-    mock: boolean,
-    mockUser: User
+    mock?: boolean,
+    mockUser?: User
   }
 ) =>
   oauthPlugin({
