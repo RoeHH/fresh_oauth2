@@ -49,7 +49,7 @@ const spotifyOauth2Plugin = (
         accessToken: accessToken,
       };
     },
-    mock: options?.mock,
+    mock: options?.mock || false,
     mockUser: options?.mockUser
   });
 

@@ -1,8 +1,7 @@
 import {
-  HandlerContext,
-  MiddlewareHandlerContext,
+FreshContext,
   Plugin,
-} from "https://raw.githubusercontent.com/RoeHH/fresh/plugin_routes/server.ts";
+} from "https://deno.land/x/fresh@1.6.1/server.ts";
 import { OAuth2Client } from "https://deno.land/x/oauth2_client@v1.0.0/mod.ts";
 import { OAuth2PluginParams, User } from "./oauth2Plugin.d.ts";
 import {
@@ -37,9 +36,8 @@ export default (params: OAuth2PluginParams) => {
         path: "/oauth2/login",
         handler: async (
           _req: Request,
-          ctx: HandlerContext<Data, WithSession>,
+          ctx: FreshContext<Data, WithSession>,
         ): Promise<Response> => {
-          console.log(params.mock, "mocked oauth2 fix if in production");
           
           if(params.mock)
             return Response.redirect("/oauth2/callback", 302)
@@ -58,7 +56,7 @@ export default (params: OAuth2PluginParams) => {
         path: "/oauth2/logout",
         handler: (
           req: Request,
-          ctx: HandlerContext<Data, WithSession>,
+          ctx: FreshContext<Data, WithSession>,
         ): Response => {
           const { session } = ctx.state;
           session.set("auth_token", undefined);
@@ -72,7 +70,7 @@ export default (params: OAuth2PluginParams) => {
         path: "/oauth2/callback",
         handler: async (
           req: Request,
-          ctx: HandlerContext<Data, WithSession>,
+          ctx: FreshContext<Data, WithSession>,
         ): Promise<Response> => {
           if(!params.mock){
             const { session } = ctx.state;
@@ -103,13 +101,13 @@ export default (params: OAuth2PluginParams) => {
           handler: [
             (
               req: Request,
-              ctx: MiddlewareHandlerContext<State>,
+              ctx: FreshContext<State>,
             ): Promise<Response> => {
               return cookieSession()(req, ctx);
             },
             async (
               req: Request,
-              ctx: MiddlewareHandlerContext<State>,
+              ctx: FreshContext<State>,
             ): Promise<Response> => {
               if(!params.excludedPaths || ![...params.excludedPaths, "/oauth2/callback", "/oauth2/logout", "/oauth2/login"].some(path => req.url.endsWith(path))){               
                 const { session } = ctx.state;
