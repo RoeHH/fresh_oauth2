@@ -58,7 +58,7 @@ export default spotifyOauth2Plugin;
 function throwErrorIfUndefined(s: string|undefined, mocked: boolean): string {
   if(mocked)
     return "mocked"
-  if (s)
-    return s;
+  return s || "undefined";
  // throw new Error("Environment variable oauthClientSecret and/or oauthClientId are not set or passed as argument");
+
 }
